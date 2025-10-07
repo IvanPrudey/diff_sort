@@ -1,3 +1,8 @@
+'''Визуализатор сортировки. 
+Дополнить еще сортировку выбором/вставками
+Добавить показатель времени - за которое массив проходит сортировку.
+'''
+
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import random
@@ -77,7 +82,7 @@ def select_choice(sort_types):
         return choice
     else:
         print("неверно, выберите из диапазона 1-2")
-        select_choice(sort_types)
+        return select_choice(sort_types)
 
 if __name__ == '__main__':
     visualizer = SortVisualizer()
