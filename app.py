@@ -1,25 +1,28 @@
-'''Визуализатор сортировки. 
-Дополнить еще сортировку выбором/вставками
-Добавить показатель времени - за которое массив проходит сортировку.
+'''Визуализатор алгоритмов сортировки.
 '''
 
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import random
 
+INTERVAL_VIZUALIZATION = 1 # задать интервал между кадрами визуализации
 
 SORT_TYPES = {
     '1': 'bubble',
     '2': 'selection'
 }
 
-SIZE = 50
+SIZE = 30 # задать количество элементов в массиве
 
 def generate_data(size=SIZE):
+    '''Генерирует массив уникальных чисел заданного размера.'''
     return random.sample(range(1, size + 1), size)
 
 class SortVisualizer:
+    '''Для визуализации алгоритмов сортировки.'''
+
     def __init__(self, size=SIZE):
+        '''Инициализирует визуализатор.'''
         self.size = size
         self.arr = generate_data(size)
         self.fig, self.ax = plt.subplots(figsize=(12, 6))
@@ -30,6 +33,7 @@ class SortVisualizer:
 
 
     def bubble_sort_gen(self):
+        '''Генератор алгоритма пузырьковой сортировки.'''
         arr = self.arr.copy()
         n = len(arr)
         for i in range(n):
@@ -40,10 +44,12 @@ class SortVisualizer:
                     yield arr, {j: 'green', j+1: 'green'}
 
     def selection_sort_gen(self):
+        '''Генератор алгоритма сортировки выбором.'''
         pass
 
 
-    def animate(self, sort_type='bubble'):        
+    def animate(self, sort_type='bubble'):
+        '''Анимация выбранного алгоритма сортировки.'''    
         sort_methods = {
             'bubble': self.bubble_sort_gen,
             'selection': self.selection_sort_gen
@@ -56,6 +62,7 @@ class SortVisualizer:
             return
         
         def update(frame):
+            '''Покадровое обновление графика.'''
             try:
                 arr, highlights = next(self.generator)
                 for i, (bar, height) in enumerate(zip(self.bars, arr)):
@@ -71,12 +78,18 @@ class SortVisualizer:
             return self.bars
         
         self.ani = animation.FuncAnimation(
-            self.fig, update, interval=1, blit=False, repeat=False, cache_frame_data=False
+            self.fig,
+            update,
+            interval=INTERVAL_VIZUALIZATION,
+            blit=False,
+            repeat=False,
+            cache_frame_data=False
         )
         plt.show()
 
 
 def select_choice(sort_types):
+    '''Запрос у пользователя алгоритма сортировки для визуализации.'''
     choice = input('выберите вариант сортировки для визуализации(1-2):')
     if choice in sort_types:
         return choice
