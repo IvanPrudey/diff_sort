@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 import random
 
 
@@ -21,19 +22,67 @@ class SortVisualizer:
         self.ax.set_title('Визуализация сортировки')
         self.ax.set_xlim(0, size)
         self.generator = None
-    
+
+
+    def bubble_sort_gen(self):
+        arr = self.arr.copy()
+        n = len(arr)
+        for i in range(n):
+            for j in range(0, n-i-1):
+                yield arr, {j: 'red', j+1: 'orange'}
+                if arr[j] > arr[j+1]:
+                    arr[j], arr[j+1] = arr[j+1], arr[j]
+                    yield arr, {j: 'green', j+1: 'green'}
+
+    def selection_sort_gen(self):
+        pass
+
+
+    def animate(self, sort_type='bubble'):        
+        sort_methods = {
+            'bubble': self.bubble_sort_gen,
+            'selection': self.selection_sort_gen
+        }
+        
+        if sort_type in sort_methods:
+            self.generator = sort_methods[sort_type]()
+        else:
+            print('Неизвестный тип сортировки')
+            return
+        
+        def update(frame):
+            try:
+                arr, highlights = next(self.generator)
+                for i, (bar, height) in enumerate(zip(self.bars, arr)):
+                    bar.set_height(height)
+                    if i in highlights:
+                        bar.set_color(highlights[i])
+                    else:
+                        bar.set_color('skyblue')
+            except StopIteration:
+                for bar in self.bars:
+                    bar.set_color('lightgreen')
+                self.ani.event_source.stop()
+            return self.bars
+        
+        self.ani = animation.FuncAnimation(
+            self.fig, update, interval=1, blit=False, repeat=False, cache_frame_data=False
+        )
+        plt.show()
+
 
 def select_choice(sort_types):
     choice = input('выберите вариант сортировки для визуализации(1-2):')
     if choice in sort_types:
-        pass
+        return choice
     else:
         print("неверно, выберите из диапазона 1-2")
         select_choice(sort_types)
 
 if __name__ == '__main__':
+    visualizer = SortVisualizer()
     print('возможные варианты сортировки:')
     print('1 пузырьковая')
     print('2 выбором')
 
-select_choice(SORT_TYPES)
+visualizer.animate(SORT_TYPES[select_choice(SORT_TYPES)])
