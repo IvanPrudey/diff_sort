@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 import random
 
 
@@ -15,7 +16,12 @@ class SortVisualizer:
     def __init__(self, size=SIZE):
         self.size = size
         self.arr = generate_data(size)
-
+        self.fig, self.ax = plt.subplots(figsize=(12, 6))
+        self.bars = self.ax.bar(range(len(self.arr)), self.arr, color='skyblue')
+        self.ax.set_title('Визуализация сортировки')
+        self.ax.set_xlim(0, size)
+        self.generator = None
+    
 
 def select_choice(sort_types):
     choice = input('выберите вариант сортировки для визуализации(1-2):')
