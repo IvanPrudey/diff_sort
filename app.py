@@ -5,18 +5,20 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import random
 
-INTERVAL_VIZUALIZATION = 1 # задать интервал между кадрами визуализации
+INTERVAL_VIZUALIZATION = 1  # задать интервал между кадрами визуализации
 
 SORT_TYPES = {
     '1': 'bubble',
     '2': 'selection'
 }
 
-SIZE = 30 # задать количество элементов в массиве
+SIZE = 30  # задать количество элементов в массиве
+
 
 def generate_data(size=SIZE):
     '''Генерирует массив уникальных чисел заданного размера.'''
     return random.sample(range(1, size + 1), size)
+
 
 class SortVisualizer:
     '''Для визуализации алгоритмов сортировки.'''
@@ -31,7 +33,6 @@ class SortVisualizer:
         self.ax.set_xlim(0, size)
         self.generator = None
 
-
     def bubble_sort_gen(self):
         '''Генератор алгоритма пузырьковой сортировки.'''
         arr = self.arr.copy()
@@ -45,8 +46,16 @@ class SortVisualizer:
 
     def selection_sort_gen(self):
         '''Генератор алгоритма сортировки выбором.'''
-        pass
-
+        arr = self.arr.copy()
+        n = len(arr)
+        for i in range(n):
+            min_idx = i
+            for j in range(i+1, n):
+                yield arr, {i: 'blue', j: 'red', min_idx: 'orange'}
+                if arr[j] < arr[min_idx]:
+                    min_idx = j
+            arr[i], arr[min_idx] = arr[min_idx], arr[i]
+            yield arr, {i: 'green', min_idx: 'green'}
 
     def animate(self, sort_type='bubble'):
         '''Анимация выбранного алгоритма сортировки.'''    
@@ -54,13 +63,13 @@ class SortVisualizer:
             'bubble': self.bubble_sort_gen,
             'selection': self.selection_sort_gen
         }
-        
+
         if sort_type in sort_methods:
             self.generator = sort_methods[sort_type]()
         else:
             print('Неизвестный тип сортировки')
             return
-        
+
         def update(frame):
             '''Покадровое обновление графика.'''
             try:
@@ -76,7 +85,7 @@ class SortVisualizer:
                     bar.set_color('lightgreen')
                 self.ani.event_source.stop()
             return self.bars
-        
+
         self.ani = animation.FuncAnimation(
             self.fig,
             update,
@@ -96,6 +105,7 @@ def select_choice(sort_types):
     else:
         print("неверно, выберите из диапазона 1-2")
         return select_choice(sort_types)
+
 
 if __name__ == '__main__':
     visualizer = SortVisualizer()
