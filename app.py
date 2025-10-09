@@ -9,7 +9,8 @@ INTERVAL_VIZUALIZATION = 1  # задать интервал между кадр�
 
 SORT_TYPES = {
     '1': 'bubble',
-    '2': 'selection'
+    '2': 'selection',
+    '3': 'insertion'
 }
 
 SIZE = 30  # задать количество элементов в массиве
@@ -57,11 +58,29 @@ class SortVisualizer:
             arr[i], arr[min_idx] = arr[min_idx], arr[i]
             yield arr, {i: 'green', min_idx: 'green'}
 
+    def insertion_sort_gen(self):
+        """Генератор алгоритма сортировки вставками"""
+        arr = self.arr.copy()
+        n = len(arr)
+        for i in range(1, n):
+            key = arr[i]
+            j = i - 1
+            yield arr, {i: 'red', j: 'orange'}
+            while j >= 0 and arr[j] > key:
+                arr[j + 1] = arr[j]
+                yield arr, {j: 'red', j+1: 'green'}
+                j -= 1
+                if j >= 0:
+                    yield arr, {j: 'orange', i: 'red'}
+            arr[j + 1] = key
+            yield arr, {j+1: 'purple'}
+
     def animate(self, sort_type='bubble'):
         '''Анимация выбранного алгоритма сортировки.'''    
         sort_methods = {
             'bubble': self.bubble_sort_gen,
-            'selection': self.selection_sort_gen
+            'selection': self.selection_sort_gen,
+            'insertion': self.insertion_sort_gen
         }
 
         if sort_type in sort_methods:
@@ -99,11 +118,11 @@ class SortVisualizer:
 
 def select_choice(sort_types):
     '''Запрос у пользователя алгоритма сортировки для визуализации.'''
-    choice = input('выберите вариант сортировки для визуализации(1-2):')
+    choice = input('выберите вариант сортировки для визуализации(1-3):')
     if choice in sort_types:
         return choice
     else:
-        print("неверно, выберите из диапазона 1-2")
+        print("неверно, выберите из диапазона 1-3")
         return select_choice(sort_types)
 
 
@@ -112,5 +131,6 @@ if __name__ == '__main__':
     print('возможные варианты сортировки:')
     print('1 пузырьковая')
     print('2 выбором')
+    print('3 вставками')
 
 visualizer.animate(SORT_TYPES[select_choice(SORT_TYPES)])
