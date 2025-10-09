@@ -4,6 +4,9 @@
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import random
+import time
+
+from functools import wraps
 
 INTERVAL_VIZUALIZATION = 1  # задать интервал между кадрами визуализации
 
@@ -14,6 +17,20 @@ SORT_TYPES = {
 }
 
 SIZE = 30  # задать количество элементов в массиве
+
+
+def timer_decorator(func):
+    '''Декоратор для замера времени реализации алгоритма.'''
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        execution_time = end_time - start_time
+        print(
+            f'На алгоритм сортировки {func.__name__} ушло - {execution_time:.4f} секунд')
+        return result
+    return wrapper
 
 
 def generate_data(size=SIZE):
@@ -34,6 +51,7 @@ class SortVisualizer:
         self.ax.set_xlim(0, size)
         self.generator = None
 
+    @timer_decorator
     def bubble_sort_gen(self):
         '''Генератор алгоритма пузырьковой сортировки.'''
         arr = self.arr.copy()
@@ -45,6 +63,7 @@ class SortVisualizer:
                     arr[j], arr[j+1] = arr[j+1], arr[j]
                     yield arr, {j: 'green', j+1: 'green'}
 
+    @timer_decorator
     def selection_sort_gen(self):
         '''Генератор алгоритма сортировки выбором.'''
         arr = self.arr.copy()
@@ -58,6 +77,7 @@ class SortVisualizer:
             arr[i], arr[min_idx] = arr[min_idx], arr[i]
             yield arr, {i: 'green', min_idx: 'green'}
 
+    @timer_decorator
     def insertion_sort_gen(self):
         """Генератор алгоритма сортировки вставками"""
         arr = self.arr.copy()
